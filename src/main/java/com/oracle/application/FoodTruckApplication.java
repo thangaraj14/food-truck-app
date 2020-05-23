@@ -8,6 +8,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.web.reactive.function.client.ClientResponse;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
@@ -27,6 +28,7 @@ import java.util.Scanner;
 /**
  * The FoodTruckApplication prints out a list of food trucks that are open at the current date and current time
  */
+@SpringBootApplication
 public class FoodTruckApplication {
 
     private Logger logger = LoggerFactory.getLogger(FoodTruckApplication.class);
@@ -49,7 +51,7 @@ public class FoodTruckApplication {
      */
     private void getCurrentDateTimeAndFetchFoodTrucks() throws JsonProcessingException, JSONException {
 
-        logger.info("getCurrentDateTimeAndFetchFoodTrucks method started execution");
+        logger.debug("getCurrentDateTimeAndFetchFoodTrucks method started execution");
 
         DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm a");
         Date date = Calendar.getInstance().getTime();
@@ -59,11 +61,11 @@ public class FoodTruckApplication {
         LocalDate localDate = LocalDate.of(Integer.parseInt(dateArr[0]), Integer.parseInt(dateArr[1]),
                 Integer.parseInt(dateArr[2]));
         DayOfWeek dayOfWeek = localDate.getDayOfWeek();
-        fetchFoodTrucks(dateAndTimeArr[1], dayOfWeek.getValue());
+        processFoodTrucks(dateAndTimeArr[1], dayOfWeek.getValue());
     }
 
     /**
-     * It pulls the food truck information based on offset and current time. It continues to fetch the results based
+     * It pulls the food truck debugrmation based on offset and current time. It continues to fetch the results based
      * on user's input. It returns only 10 records at a time.
      *
      * @param currTime
@@ -72,9 +74,9 @@ public class FoodTruckApplication {
      * @throws JsonProcessingException
      * @throws JSONException
      */
-    public void fetchFoodTrucks(String currTime, int dayOrder) throws JsonProcessingException, JSONException {
+    public void processFoodTrucks(String currTime, int dayOrder) throws JsonProcessingException, JSONException {
 
-        logger.info("fetchFoodTrucks method started execution");
+        logger.debug("fetchFoodTrucks method started execution");
 
         List<Resource> resourceList = getResources(currTime, dayOrder, 0);
         if (resourceList.size() == 0) {
@@ -119,7 +121,7 @@ public class FoodTruckApplication {
         } while (input == '$');
 
         scanner.close();
-        logger.info("fetchFoodTrucks method ended execution");
+        logger.debug("fetchFoodTrucks method ended execution");
     }
 
     /**
@@ -128,12 +130,12 @@ public class FoodTruckApplication {
      * @param output
      */
     private void printTheResources(List<Resource> output) {
-        logger.info("printTheResources method started execution");
+        logger.debug("printTheResources method started execution");
         Collections.sort(output, Comparator.comparing(Resource::getApplicant));
         String format = "%-40s%s%n";
         System.out.printf(format, "Name", "Address");
         output.forEach(resource -> System.out.format(format, resource.getApplicant(), resource.getLocation()));
-        logger.info("printTheResources method ended execution");
+        logger.debug("printTheResources method ended execution");
     }
 
     /**
@@ -152,7 +154,7 @@ public class FoodTruckApplication {
     private List<Resource> getResources(String currTime, int dayOrder, int offset)
             throws JSONException, JsonProcessingException {
 
-        logger.info("getResources method started execution");
+        logger.debug("getResources method started execution");
         WebClient webClient = WebClient.builder()
                                        .baseUrl("https://data.sfgov.org/resource/jjew-r69b.json?$where=start24 <= '"
                                                + currTime + "' and end24 >= " + "'" + currTime + "'&dayorder="
@@ -166,7 +168,7 @@ public class FoodTruckApplication {
             JSONObject jsonObj = jsonArr.getJSONObject(i);
             resourceList.add(new ObjectMapper().readValue(jsonObj.toString(), Resource.class));
         }
-        logger.info("getResources method ended execution");
+        logger.debug("getResources method ended execution");
         return resourceList;
     }
 }
