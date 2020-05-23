@@ -1,6 +1,6 @@
-package com.example.application;
+package com.oracle.application;
 
-import com.example.model.Resource;
+import com.oracle.model.Resource;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.json.JSONArray;
@@ -85,6 +85,7 @@ public class FoodTruckApplication {
         int listOffset = 0;
         char input;
         int listSize = resourceList.size();
+        boolean status = false;
         Scanner scanner = new Scanner(System.in);
         do {
             List<Resource> output;
@@ -94,6 +95,7 @@ public class FoodTruckApplication {
             if (listSize <= 10) {
                 output = resourceList.subList(listOffset, listOffset + listSize);
                 listSize = 0;
+                status = true;
             } else {
                 output = resourceList.subList(listOffset, listOffset + limit);
             }
@@ -103,13 +105,16 @@ public class FoodTruckApplication {
             System.out.println("Press $ to continue seeing other food trucks");
             input = scanner.next().trim().charAt(0);
             if (input == '$' && listSize == 0 && resourceList.size() == 40) {
-                resourceList = getResources(currTime, dayOrder, ++offset);
+                offset = offset + 40;
+                resourceList = getResources(currTime, dayOrder, offset);
                 listSize = resourceList.size();
                 listOffset = 0;
                 if (resourceList.size() == 0) {
-                    System.out.println("Sorry, You have seen all the food trucks that are open..!");
                     return;
                 }
+            }
+            if (status) {
+                System.out.println("You have seen all the food trucks that are open..!");
             }
         } while (input == '$');
 
@@ -148,10 +153,11 @@ public class FoodTruckApplication {
             throws JSONException, JsonProcessingException {
 
         logger.info("getResources method started execution");
-        WebClient webClient = WebClient.create(
-                "https://data.sfgov.org/resource/jjew-r69b.json?$where=start24 <= '" + currTime + "' and end24 >= "
-                        + "'" + currTime + "'&dayorder=" + dayOrder + "&$limit=40&$offset=" + offset);
-        System.out.println(offset + "---");
+        WebClient webClient = WebClient.builder()
+                                       .baseUrl("https://data.sfgov.org/resource/jjew-r69b.json?$where=start24 <= '"
+                                               + currTime + "' and end24 >= " + "'" + currTime + "'&dayorder="
+                                               + dayOrder + "&$limit=40&$offset=" + offset)
+                                       .build();
         Mono<ClientResponse> result = webClient.get().exchange();
         String data = result.flatMap(res -> res.bodyToMono(String.class)).block();
         List<Resource> resourceList = new ArrayList<>();

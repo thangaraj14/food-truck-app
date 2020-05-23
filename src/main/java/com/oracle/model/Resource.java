@@ -1,4 +1,4 @@
-package com.example.model;
+package com.oracle.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Getter;
