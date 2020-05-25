@@ -38,13 +38,13 @@ public class FoodTruckApplication {
         try {
             foodTruckApplication.getCurrentDateTimeAndFetchFoodTrucks();
         } catch (JsonProcessingException | JSONException ex) {
-            System.out.println("There is an error occurred while parsing data");
+            System.out.println("An error occurred while parsing data");
         }
     }
 
     /**
-     * It fetches the current date and time from system and extracts day of week and time(hours and minutes). it
-     * call fetchFoodTrucks method to get food truck details
+     * It fetches the current date and time from the system and extracts the day of week and the time(hours and minutes). It
+     * calls the fetchFoodTrucks method to get the food truck details
      *
      * @throws JsonProcessingException
      * @throws JSONException
@@ -65,8 +65,8 @@ public class FoodTruckApplication {
     }
 
     /**
-     * It pulls the food truck debugrmation based on offset and current time. It continues to fetch the results based
-     * on user's input. It returns only 10 records at a time.
+     * It pulls the food truck information based on the offset and the current time. It continues to fetch the results based
+     * on the users input. It returns only 10 records at a time.
      *
      * @param currTime
      * @param dayOrder
@@ -104,7 +104,7 @@ public class FoodTruckApplication {
             listOffset = listOffset + limit;
             listSize = (listSize >= limit) ? (listSize - limit) : listSize;
             printTheResources(output);
-            System.out.println("Press $ to continue seeing other food trucks");
+            System.out.println("Press $ to view the next ten food truck details");
             input = scanner.next().trim().charAt(0);
             if (input == '$' && listSize == 0 && resourceList.size() == 40) {
                 offset = offset + 40;
@@ -116,7 +116,7 @@ public class FoodTruckApplication {
                 }
             }
             if (status) {
-                System.out.println("You have seen all the food trucks that are open..!");
+                System.out.println("Thats all folks ..!");
             }
         } while (input == '$');
 
@@ -125,7 +125,7 @@ public class FoodTruckApplication {
     }
 
     /**
-     * It prints the resources in console.
+     * It prints the food truck information in the console.
      *
      * @param output
      */
@@ -139,8 +139,8 @@ public class FoodTruckApplication {
     }
 
     /**
-     * This is the main entry point for performing web requests.it fetches only 40 records in a call.so that it will
-     * be fast. it also converts string data to custom Resource object.
+     * This is the main entry point for performing web requests.It fetches only 40 records at a time for performance optimization
+     * .In addition it converts string data to custom Resource object.
      *
      * @param currTime
      * @param dayOrder
